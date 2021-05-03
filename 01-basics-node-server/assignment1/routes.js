@@ -7,10 +7,16 @@ const requestHandler = (req, res) => {
 
   if (url === '/') {
     res.write(greetingHtml);
-    return res.end();
+    res.end();
   }
 
-  if (url === '/' && method === "POST") {
+  if (url === '/users') {
+    res.write(usersHtml);
+    res.end();
+  }
+
+  if (url === "/create-user") {
+    console.log("posted ... ")
     const body = [];
     req.on('data', (chunk) => {
       console.log('chunk: ', chunk)
@@ -21,7 +27,8 @@ const requestHandler = (req, res) => {
       const parsedBody = Buffer.concat(body).toString();
       console.log('parsedBody: ', parsedBody)
       const newUser = parsedBody.split('=')[1];
-      fs.writeFile('users.txt', newUser, (err) => {
+      fs.writeFile(usersFile, newUser, (err) => {
+        console.log("newUser : ", newUser)
         res.statusCode = 302;
         res.setHeader('Location', '/');
         return res.end();
@@ -73,10 +80,12 @@ let greetingHtml = `
   <link rel="stylesheet" href="">
 </head>
 <body>
-  <h1>hello, welcome to node js</h1>
+  <h1>hello, welcome to node js!!!!</h1>
+  <a href="/users">users</a>
+
   <form>
     <p>Create new user</p>
-    <p><input type="text" name="newUser" method="POST" placeholder="Enter new user name" /></p>
+    <p><input type="text" action="/create-user" name="username" method="POST" placeholder="Enter new user name" /></p>
     <button type="submit">Create new user</button>
   </form>
 </body>
